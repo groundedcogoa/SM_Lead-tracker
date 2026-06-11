@@ -432,6 +432,15 @@ Share Summary on WhatsApp
 <input class="search-input" id="searchInput" placeholder="Name, phone, or lead ID..." oninput="filterLeads()" onkeyup="filterLeads()" style="border-radius:var(--r);box-shadow:var(--sh);flex:1">
 <button onclick="filterLeads()" style="background:var(--green);color:#fff;border:none;border-radius:var(--r);padding:0 18px;font-size:13px;font-weight:600;cursor:pointer;box-shadow:var(--sh);flex-shrink:0;min-width:70px">Search</button>
 </div>
+<div id="updateFilterBar" style="display:none;padding:10px 14px 0">
+  <select id="updateFilterPerson" class="dash-filter-sel" onchange="renderQuickList()" style="width:100%">
+    <option value="">👥 All Salespeople</option>
+    <option>Kaushik</option><option>Sanjay</option><option>Amol</option>
+    <option>Prashant</option><option>Abdul</option><option>Bishwanath</option>
+    <option>Aditya</option><option>Co-ordinator 1</option>
+    <option>Tejpal</option><option>Sandesh</option><option>Sunil</option><option>Santosh</option>
+  </select>
+</div>
 <div id="updSuccess" class="upd-ok">✅ Lead updated successfully! Dashboard will refresh.</div>
 <div id="leadResultArea"></div>
 <div class="qr-list" id="quickList"></div>
@@ -555,7 +564,7 @@ function startApp(){
       si.addEventListener('input',function(){filterLeads();});
     }
   },300);
-  showScreen('form');
+  if(isAdmin) document.getElementById('updateFilterBar').style.display='block';showScreen('form');
 }
 
 // ══ ROLE FILTER ══════════════════════════════════════════════
@@ -880,7 +889,9 @@ function renderQuickList(){
     list.innerHTML='<div class="empty" style="padding:30px 0"><div style="font-size:24px;margin-bottom:10px">📋</div>'+(allLeads.length?'No open leads assigned to you.':'No leads loaded yet.<br>Pull up Dashboard once to sync.')+'</div>';
     return;
   }
-  quickLeads=visible.filter(l=>(l['Won / Lost']||'open').toLowerCase()==='open').slice(0,20);
+  const upFilter=document.getElementById('updateFilterPerson')?.value||'';
+const upVisible=upFilter?visible.filter(l=>(l['Assigned To']||'')===upFilter):visible;
+quickLeads=upVisible.filter(l=>(l['Won / Lost']||'open').toLowerCase()==='open').slice(0,20);
   list.innerHTML='<div style="font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--faint);margin-bottom:8px">Open Leads — tap to update</div>'+
     (quickLeads.map((l,i)=>{const p=(l['Priority']||'cold').toLowerCase();const dO=calcDaysOpen(l);const dOstr=typeof dO==='number'?dO+'d open':'';const dOcol=typeof dO==='number'?(dO<7?'#2d5a3d':dO<=30?'#b87020':'#c94030'):'#b0ada6';return`<div class="qr-item ${p}" onclick="pickLead(${i})">
       <div class="qr-top"><span class="qr-name">${l['Client Name']||'—'}</span><span class="sp ${(l['Status']||'new').toLowerCase()}">${l['Status']||'New'}</span></div>
