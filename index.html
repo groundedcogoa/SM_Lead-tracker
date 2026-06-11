@@ -578,7 +578,10 @@ function showScreen(id){
     document.getElementById('headerDate').textContent=new Date().toLocaleDateString('en-IN',{
       weekday:'long',day:'numeric',month:'long',year:'numeric',timeZone:'Asia/Kolkata'
     });
+    if(isAdmin) document.getElementById('dashFilterBar').style.display='block';
     loadDashboard(false);
+  }
+  if(id==='update'){
   }
   if(id==='update'){
     selLead=null;
